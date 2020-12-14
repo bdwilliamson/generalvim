@@ -1,7 +1,7 @@
 ---
 title: "A unified approach to inference on algorithm-agnostic variable importance"
 author: "Brian D. Williamson, PhD<br> <span style= 'font-size: 75%;'> Fred Hutchinson Cancer Research Center </span>"
-date: "21 October 2020<br> <a href = 'https://bdwilliamson.github.io/#talks' style = 'color: white;'>https://bdwilliamson.github.io/#talks</a>"
+date: "`r format(as.Date(Sys.Date(), '%d%b%Y'), '%d %B, %Y')`<br> <a href = 'https://bdwilliamson.github.io/#talks' style = 'color: white;'>https://bdwilliamson.github.io/#talks</a>"
 output:
   xaringan::moon_reader:
     css: xaringan-themer.css
