@@ -181,6 +181,53 @@ In particular, `\(\sqrt{n}(\psi_{n,s}^* - \psi_{0,s})\)` has a mean-zero normal 
 
 ---
 
+## Preparing for AMP
+
+&lt;img src="img/amp.png" width="200px" style="display: block; margin: auto;" /&gt;
+
+* 611 HIV-1 pseudoviruses
+* Outcome: neutralization sensitivity/resistance to antibody
+
+--
+
+**Goal:** pre-screen features for inclusion in secondary analysis
+* 800 individual features, 13 groups of interest
+
+--
+
+&amp;zwj;Procedure: 
+1. Estimate `\(\mu_n\)`, `\(\mu_{n,s}\)` using Super Learner [van der Laan et al. (2007)]
+2. Estimate and do inference on variable importance `\(\psi_{n,s}^*\)` 
+
+.small[ [Details in Magaret et al. (2019) and Williamson et al. (2021b)] ]
+
+---
+
+## Preparing for AMP: SL performance
+
+.pull-left[
+&lt;img src="img/sl_perf_ic50.censored.png" width="100%" style="display: block; margin: auto;" /&gt;
+]
+--
+
+.pull-right[
+&lt;img src="img/sl_roc_ic50.censored.png" width="600px" style="display: block; margin: auto;" /&gt;
+]
+---
+
+## Preparing for AMP: R-squared
+
+&lt;img src="img/vim_ic50.censored_pres_r2_conditional_simple.png" width="5249" height="480px" style="display: block; margin: auto;" /&gt;
+
+---
+
+## Preparing for AMP: R-squared
+
+&lt;img src="img/ROC_curve_with_Env_inset_v2.png" width="60%" style="display: block; margin: auto;" /&gt;
+
+.small[ Magaret et al. (2019) ]
+---
+
 ## Generalization to arbitrary measures
 
 ANOVA example suggests a natural generalization:
@@ -257,7 +304,14 @@ In other words: `\(f_0\)` and `\(f_{0,-s}\)` **can be treated as known** in stud
 
 ---
 
-## Variable importance in survival analysis
+## Preparing for AMP: the full picture
+
+&lt;img src="img/vim_ic50.censored_pres_r2_acc_auc_conditional_simple.png" width="5249" height="480px" style="display: block; margin: auto;" /&gt;
+
+[AMP results in Juraska et al. (2023)]
+---
+
+## Survival analysis
 
 .pull-left[
  Survival analysis requires special care:
@@ -275,7 +329,7 @@ In other words: `\(f_0\)` and `\(f_{0,-s}\)` **can be treated as known** in stud
 
 ---
 
-## Variable importance in survival analysis
+## Survival analysis
 
 Example predictiveness measures: (all rely on a landmark time `\(\tau\)`)
 
@@ -292,7 +346,7 @@ Survival time MSE: `\(V(f, P) = -E[\{f(X) - \max(T, \tau)\}^2]\)`
 
 ---
 
-## Variable importance in survival analysis
+## Survival analysis
 
 Further required conditions:
 * `\(T\)` and `\(C\)` are conditionally independent given `\(X\)`
@@ -544,7 +598,9 @@ Check out the software:
 ## References
 
 * .small[ Breiman L. 2001. Random forests. _Machine Learning_.]
-* .small[ van der Laan MJ. 2006. Statistical inference for variable importance. _The International Journal of Biostatistics_.]
+* .small[ Magaret, CA and Benkeser, DC and Williamson, BD et al. 2019. Prediction of VRC01 neutralization sensitivity by HIV-1 gp160 sequence features. _PLOS Computational Biology_. ]
+* .small[ Juraska M, et al. 2023. Prevention efficacy of the broadly neutralizing antibody VRC01 depends on HIV-1 envelope sequence features. _Proceedings of the National Academy of Sciences_. ]
+* .small[ van der Laan MJ. 2006. Statistical inference for variable importance. _The International Journal of Biostatistics_. ]
 * .small[ van der Laan MJ, Polley EC, and Hubbard AE. 2007. Super Learner. _Statistical Applications in Genetics and Molecular Biology_. ]
 * .small[ Williamson BD, Gilbert P, Carone M, and Simon N. 2021. Nonparametric variable importance assessment using machine learning techniques (+ rejoinder to discussion). _Biometrics_. ]
 * .small[ Williamson BD, Gilbert P, Simon N, and Carone M. 2022. A general framework for inference on algorithm-agnostic variable importance. _Journal of the American Statistical Association_. ]
