@@ -57,9 +57,15 @@ xaringanExtra::use_tile_view()
 ## Acknowledgments
 
 This work was done in collaboration with:
-```{r acknowledgments, echo = FALSE, fig.show = "hold", out.width = "100%", fig.align = "center"}
+```{r acknowledgments, echo = FALSE, fig.show = "hold", out.height = "30%", out.width="60%", fig.align = "center"}
 knitr::include_graphics(c(
-    "img/people4.png"
+    "img/people1.png"
+  ))
+```
+
+```{r acknowledgments2, echo = FALSE, fig.show = "hold", out.height = "30%", out.width="60%", fig.align = "center"}
+knitr::include_graphics(c(
+    "img/people2.png"
   ))
 ```
 
@@ -196,7 +202,7 @@ Under regularity conditions, $\psi_{n,s}^*$ is consistent and nonparametric effi
 
 In particular, $\sqrt{n}(\psi_{n,s}^* - \psi_{0,s})$ has a mean-zero normal limit with estimable variance.
 
-[Details in Williamson et al. (2020)]
+[Details in Williamson et al. (2021)]
 
 ---
 
@@ -276,13 +282,225 @@ In other words: $f_0$ and $f_{0,-s}$ **can be treated as known** in studying beh
 
 ---
 
-## Variable importance in survival analysis
+## Survival analysis
 
-highlight charlie's work
+.pull-left[
+ Survival analysis requires special care:
+ * $T$: event time of interest
+ * $C$: censoring time
+ * Ideal data unit: $(X,T,C)$
+ * Observed data unit: $(X,Y,\Delta)$, where
+  * $Y = \min\{T,C\}$
+  * $\Delta = I(T \leq C)$
+]
+
+.pull-right[
+```{r acknowledgments3, echo = FALSE, fig.show = "hold", out.width = "30%", fig.align = "center"}
+knitr::include_graphics(c(
+    "img/charlie.png"
+  ))
+```
+]
 
 ---
 
-## Extensions: correlated features and longitudinal importance
+## Survival analysis
+
+Example predictiveness measures: (all rely on a landmark time $\tau$)
+
+&zwj;AUC at $\tau$: $V(f, P) = P\{f(X_1) > f(X_2) \mid T_1 \leq \tau, T_2 > \tau\}$
+* $f$ is a risk score
+
+Brier score: $V(f, P) = -E[\{f(X) - I(T > \tau)\}^2]$ 
+* $f$ predicts the binary outcome $I(T > \tau)$
+
+Survival time MSE: $V(f, P) = -E[\{f(X) - \max(T, \tau)\}^2]$
+* $f$ predicts a participant's $\tau$-restricted survival time
+
+&zwj;C-index: $V(f, P) = P\{f(X_1) > f(X_2) \mid T_1 < T_2, T_1 \leq \tau\}$
+
+---
+
+## Survival analysis
+
+Further required conditions:
+* $T$ and $C$ are conditionally independent given $X$
+* there exists some $\tau_0 \in (0, \infty)$ satisfying:
+  * $P(C > \tau_0 \mid X) > 0$ almost surely
+  
+--
+
+Also required:
+* estimating the oracle prediction function (often the conditional survival function)
+* the time-to-event distribution function
+* the conditional censoring survival function
+
+--
+
+Estimating the cumulative hazard requires additional debiasing
+
+[Details in Wolock et al. (2023)]
+
+---
+
+## Extension: correlated features 
+
+So far: importance of $(X_j: j \in s)$ relative to $X$
+
+--
+
+$\color{red}{\text{Potential issue}}$: correlated features
+
+&zwj;Example: two highly correlated features, age and foot size; predicting toddlers' reading ability
+
+--
+
+* True importance of age = 0 (since foot size is in the model)
+* True importance of foot size = 0 (since age is in the model)
+
+--
+
+&zwj;Idea: average contribution of a feature over all subsets!
+
+--
+
+True importance of age = average(.blue1[increase in predictiveness from adding age to foot size] & .green[increase in predictiveness from using age over nothing])
+
+--
+
+Borrowed ideas from game theory to develop a subset-averaged framework
+
+
+[Details in Williamson and Feng (2020)]
+
+---
+
+## Extension: longitudinal importance
+
+So far: cross-sectional variable importance
+
+Can we do inference on variable importance longitudinally?
+
+```{r longitudinal-vim, echo = FALSE, fig.show = "hold", out.width = "60%", fig.align = "center", message=FALSE, warning=FALSE}
+knitr::include_graphics(c(
+    "img/lvim_example.png"
+  ))
+```
+
+---
+
+## Summarizing a VIM trajectory
+
+&zwj;Define: 
+* contiguous set of timepoints $\tau := [t_0, t_1]$
+* variable importance at each time point $\psi_{0,s,t}$, $t \in \tau$
+
+--
+
+Examples of summary measures over $\tau$, $m(\psi_{0,s,\tau})$:
+
+&zwj;Mean: $\lVert \tau \rVert^{-1} \sum_{t \in \tau} \psi_{0,s,t}$
+
+--
+
+Linear trend: $(\beta_0, \beta_1) = \text{arg min}_{(\alpha_1, \alpha_2) \in \mathbb{R}^2} \lVert \psi_{0,s,t} - \alpha_1  - t \alpha_2\rVert_2^2$
+
+---
+
+## Summarizing a VIM trajectory
+
+```{r longitudinal-vim-2, echo = FALSE, fig.show = "hold", out.width = "40%", fig.align = "center", message=FALSE, warning=FALSE}
+knitr::include_graphics(c(
+    "img/lvim_example.png"
+  ))
+```
+
+| Summary | VIM 1 | VIM 2 | VIM 3 |
+|:-------:--------:-------:-------|
+| Mean    | 0.3   | 0.8   | 0.06  |
+| Slope   | 0.1   | 0     | -0.05 |
+
+---
+
+## Summarizing a VIM trajectory
+
+How should we make inference on $m(\psi_{0,s,\tau})$?
+--
+
+1. construct estimators $f_{n,t}$, $f_{n,-s,t}$ of $f_{0,t}$, $f_{0,-s,t}$ (e.g., with machine learning)
+
+--
+
+2. plug in: $\psi_{n,s,t}^* = V(f_{n,s,t}, P_{n,s,t}) - V(f_{n,-s,t}, P_{n,s,t})$ 
+
+--
+
+3. plug in: $$m_{n,s}^* := m(\psi_{n,s,\tau}^*)$$
+
+--
+
+4. Inference can be carried out using influence functions.
+
+[Details in Williamson et al. (2023)]
+
+---
+
+## VIMs for predictors of suicide risk
+
+Data gathered from electronic health record on sample of 343,950 visits made by 184,782 people
+
+Key variables: .small[ Jacobs et al. (2010) ]
+* Patient Health Questionnaire (PHQ)
+  * PHQ-8 total score (depressive symptoms) 
+  * PHQi9 (suicidal ideation)
+* Prior recorded self-harm
+* Age
+* Sex (sex assigned at birth)
+
+Outcome: suicide attempt in 90 days following mental health visit
+
+Sampled one visit per person at six possible measurement times over 18 months:
+* 99,991 people had only one visit
+* 4,093 people had six visits
+* Rate of suicide attempt approximately 0.5% at all time points
+
+---
+
+## VIMs for predictors of suicide risk
+
+&zwj;Goal: estimate VIMs for PHQi9 and prior recorded self-harm
+
+Variable sets considered:
+1. no variables
+2. PHQi9 alone
+3. age and sex (base set)
+4. age, sex, and PHQi9
+5. age, sex, and prior self-harm
+6. age, sex, prior self-harm, and PHQi9
+
+--
+
+Estimate prediction functions at each time point using the Super Learner [ van der Laan et al. (2007) ]
+
+---
+
+## VIMs for predictors of suicide risk
+
+```{r data-analysis-1, echo = FALSE, fig.show = "hold", out.width = "100%", fig.align = "center", message=FALSE, warning=FALSE}
+knitr::include_graphics(c(
+    "img/vims_of_interest_over_time_presentation.png"
+  ))
+```
+
+---
+
+## VIMs for predictors of suicide risk
+
+```{r data-analysis-2, echo = FALSE, fig.show = "hold", out.width = "100%", fig.align = "center", message=FALSE, warning=FALSE}
+knitr::kable(readRDS(file = "img/vim_summaries_presentation.rds") %>% 
+               filter(grepl("PHQi9", Comparison, fixed = TRUE))) %>% 
+  kableExtra::kable_styling(font_size = 14)
+```
 
 ---
 
@@ -312,8 +530,9 @@ Check out the software:
 * .small[ Breiman L. 2001. Random forests. _Machine Learning_.]
 * .small[ van der Laan MJ. 2006. Statistical inference for variable importance. _The International Journal of Biostatistics_.]
 * .small[ van der Laan MJ, Polley EC, and Hubbard AE. 2007. Super Learner. _Statistical Applications in Genetics and Molecular Biology_. ]
-* .small[ Williamson BD, Gilbert P, Carone M, and Simon N. 2020. Nonparametric variable importance assessment using machine learning techniques (+ rejoinder to discussion). _Biometrics_. ]
+* .small[ Williamson BD, Gilbert P, Carone M, and Simon N. 2021. Nonparametric variable importance assessment using machine learning techniques (+ rejoinder to discussion). _Biometrics_. ]
 * .small[ Williamson BD, Gilbert P, Simon N, and Carone M. 2022. A general framework for inference on algorithm-agnostic variable importance. _Journal of the American Statistical Association_. ]
 * .small[ Williamson BD, Moodie EEM, and Shortreed SM. 2023. Inference on summaries of a model-agnostic longitudinal variable importance trajectory. _arXiv https://arxiv.org/pdf/2311.01638.pdf_. ]
 * .small[ Williamson BD and Feng J. 2020. Efficient nonparametric statistical inference on population feature importance using Shapley values. _ICML_. ]
+* .small[ Wolock CJ, Gilbert PB, Simon N, and Carone M. 2023. Nonparametric variable importance for time-to-event outcomes with application to prediction of HIV infection. _arXiv https://arxiv.org/pdf/2311.12726.pdf_. ]
 
