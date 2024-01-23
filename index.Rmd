@@ -59,13 +59,13 @@ xaringanExtra::use_tile_view()
 This work was done in collaboration with:
 ```{r acknowledgments, echo = FALSE, fig.show = "hold", out.height = "30%", out.width="60%", fig.align = "center"}
 knitr::include_graphics(c(
-    "img/people1.png"
+    "img/people1.PNG"
   ))
 ```
 
 ```{r acknowledgments2, echo = FALSE, fig.show = "hold", out.height = "30%", out.width="60%", fig.align = "center"}
 knitr::include_graphics(c(
-    "img/people2.png"
+    "img/people2.PNG"
   ))
 ```
 
